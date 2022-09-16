@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block heading %}
+
+{% endblock %}
+
+
+{% block content %}
+
+    {% if messages %}
+        {% for m in messages  %}
+            {{ m }}
+        {% endfor %}
+
+    {% endif %}
+
+    <div class = 'col-12'>
+        <form method="POST" action="" style="padding: 50px">
+            {% csrf_token %}
+              <div class="mb-3">
+                <label for="name">Name</label>
+                  <br>
+                <input type="text" max="30" class="form-control form-control-lg" name="name" value="{{accinfo.name}}">
+                  <br>
+                <label for="username">Username</label>
+                  <br>
+                <input type="text" minlength="1" class="form-control form-control-lg" name="username" value="{{user.username}}">
+                  <br>
+                <label for="bio">Bio</label>
+                  <br>
+                <textarea type="text" maxlength="140" class="form-control form-control-lg" name="bio"  value="{{accinfo.bio}}"></textarea>
+                  <br>
+              </div>
+
+              <button type="submit" class="btn btn-secondary form-control-lg form-control">Update</button>
+        </form>
+    </div>
+
+
+{% endblock %}

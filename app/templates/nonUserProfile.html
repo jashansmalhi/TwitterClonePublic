@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+
+
+{% block content %}
+
+    {% if messages %}
+        {% for m in messages  %}
+            {{ m }}
+        {% endfor %}
+    {% endif %}
+
+
+    <div style=''>
+        <div style="display:table ;width: 100%">
+            <h1 style="display:table-cell;">{{ accInfo.name }}</h1>
+
+            {% if isfollowing != True %}
+                <a href="/follow/{{user.username}}"><button class="btn btn-primary rounded-small text-align: right;" style="float: right;" >Follow</button></a>
+            {% else %}
+                <a href="/unfollow/{{user.username}}"><button class="btn btn-info rounded-small text-align: right;" style="float: right;" >Unfollow</button></a>
+            {% endif %}
+
+        </div>
+
+
+
+        <p>@{{user.get_username}}</p>
+        <p>{{accInfo.bio }} </p>
+        <p>{{numtweets }} Tweets     <a href="/profile/{{ user }}/followers">{{followers }} Followers</a>   <a href="/profile/{{ user }}/following">{{following }} Following</a></p>
+        <p></p>
+        <p></p>
+    </div>
+
+
+    <div style="padding: 15px">
+        {% for i in tweets %}
+
+            <div style="background-color:#E1E8ED;font-weight: bold;border-radius: 20px; width: auto; height: auto; padding: 5px 30px 5px 30px;">
+            <h5>@{{ i.tweeter }}</h5>
+            <p>{{ i.text }}</p>
+            <h6 class="text-right small">{{ i.time }}</h6>
+            </div>
+            <div style="padding-bottom: 10px"></div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

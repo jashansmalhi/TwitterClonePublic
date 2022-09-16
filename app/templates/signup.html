@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+
+{% load widget_tweaks %}
+
+{% block content %}
+    {% if message %}
+        {% for m in messages  %}
+            {{ m }}
+        {% endfor %}
+
+    {% endif %}
+
+    <div class = 'col-12'>
+        <form method="POST" action="" style="padding: 50px" class="custom-centered">
+        <div class="mb-3">
+            {%  for f in form %}
+                {{ f.label }}
+                <br>
+                {{ f|attr:"class:form-control form-control-lg"}}
+                <br>
+            {% endfor %}
+        </div>
+            {% csrf_token %}
+        <button type="submit" class="btn btn-secondary form-control form-control-lg">Sign Up</button>
+
+    </form>
+    <p class="text-center">Already have an account? <a href="/login">Login</a>.</p>
+
+        {{ form.errors }}
+</div>
+
+
+{% endblock %}
+
+
+
+

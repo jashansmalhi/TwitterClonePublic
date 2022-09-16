@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block heading %}
+
+{% endblock %}
+
+
+{% block content %}
+
+
+
+
+    <form method="POST" action="">
+            {% csrf_token %}
+        <div class="col-12">
+            <div class="input-group">
+                <textarea type="text" minlength="1" maxlength="140" class="form-control form-control-lg" name="tweet" rows="2" placeholder="What's Happening?"></textarea>
+                <button type="submit" class="btn btn-secondary">Tweet</button>
+            </div>
+        </div>
+    </form>
+
+
+
+    <div style="padding: 15px">
+        {% for i in tweets %}
+            <div style="background-color:#E1E8ED;font-weight: bold;border-radius: 20px; width: auto; height: auto; padding: 5px 30px 5px 30px;">
+
+
+
+                <div  style="display:table ;width: 100%">
+                    <h5 style="display:table-cell;"><a href="/profile/{{ i.tweeter }}">@{{ i.tweeter }}</a></h5>
+                    {% if i.tweeter  ==  user %}
+                        <a href="/tweet/delete/{{i.id}}"><button class="btn btn-danger btn-sm" style="float: right;line-height:10px;margin-top: 10px" >Delete</button></a>
+                    {% endif %}
+                </div>
+
+
+            <p>{{ i.text }}</p>
+            <h6 class="text-right small">{{ i.time }}</h6>
+            </div>
+            <div style="padding-bottom: 10px"></div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

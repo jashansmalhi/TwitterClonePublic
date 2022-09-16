@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+
+{% block content %}
+
+    {% if messages %}
+        {% for m in messages  %}
+            {{ m }}
+        {% endfor %}
+    {% endif %}
+
+    <div class = 'col-12'>
+        <form method="POST" action="" style="padding: 50px">
+            {% csrf_token %}
+              <div class="mb-3">
+                <label for="username">Username</label>
+                  <br>
+                <input type="text" class="form-control form-control-lg" name="username">
+                  <br>
+                <label for="password">Password</label>
+                  <br>
+                <input type="password" class="form-control form-control-lg" name="password">
+                  <br>
+              </div>
+
+              <button type="submit" class="btn btn-secondary form-control-lg form-control">Login</button>
+        </form>
+        <p class="text-center">Don't have an account? <a href="/reg">Create an account</a>.</p>
+    </div>
+
+
+{% endblock %}
