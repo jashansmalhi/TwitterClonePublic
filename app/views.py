@@ -158,7 +158,7 @@ def followers(request,username):
 def following(request,username):
     user=User.objects.filter(username__iexact=username).first()
     accounts = Followers.getFollowing(user)
-    return render(request, 'followers.html', {'accounts': accounts})
+    return render(request, 'following.html', {'accounts': accounts})
 
 @login_required(login_url='login')
 def follow(request,username):
