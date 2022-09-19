@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['twitterclone-production-d7cd.up.railway.app']
 
-CSRF_TRUSTED_ORIGINS = ['https://twitterclone-production-d7cd.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['twitterclone-production-d7cd.up.railway.app']
 
 # Application definition
 
