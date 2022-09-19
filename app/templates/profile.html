@@ -46,12 +46,20 @@
         {% for i in tweets %}
             <div style="background-color:#E1E8ED;font-weight: bold;border-radius: 20px; width: auto; height: auto; padding: 5px 30px 5px 30px;">
                 <div style="display:table ;width: 100%">
-                    <h5 style="display:table-cell;">@{{ i.tweeter }}</h5>
-
-                    <a href="/tweet/deletee/{{i.id}}"><button class="btn btn-danger btn-sm" style="float: right;line-height:10px;margin-top: 10px" >Delete</button></a>
+                    <h5>@{{ i.tweeter }}</h5>
                 </div>
             <p>{{ i.text }}</p>
-            <h6 class="text-right small">{{ i.time }}</h6>
+            <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <h6 class="text-left small">{{ i.numlikes }} Likes {{ i.numcomments }} Comments</h6>
+                    <h6 class="text-right small">{{ i.time }}</h6>
+                </div>
+                <div style="padding-bottom: 5px">
+                    <a href="/tweet/{{i.id}}/like"><button class="btn btn-outline-danger btn-sm"  >{% if user.username in i.likers %} Unlike{% else %} Like{% endif %}</button></a>
+                    <a href="/tweet/{{i.id}}"><button class="btn btn-outline-danger btn-sm"  >Comment</button></a>
+                    {% if i.tweeter  ==  user %}
+                    <a href="/tweet/delete/{{i.id}}"><button class="btn btn-outline-danger btn-sm" >Delete</button></a>
+                    {% endif %}
+                </div>
             </div>
             <div style="padding-bottom: 10px"></div>
         {% endfor %}

@@ -13,7 +13,7 @@ class Account(models.Model):
 
 class Followers(models.Model):
     follower = models.ForeignKey(User, on_delete=models.CASCADE)
-    followed = models.CharField(max_length=20)
+    followed = models.CharField(max_length=50)
     @classmethod
     def getFollowing(cls,user):
         followedd = []
@@ -44,11 +44,41 @@ class Tweets(models.Model):
     tweeter = models.ForeignKey(User, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
 
+    def likers(self):
+        return Likes.objects.filter(tweet_id=self.id).values_list('liker', flat=True)
+
+    def numlikes(self):
+        return Likes.objects.filter(tweet=self.id).count()
+    def numcomments(self):
+        return Comments.objects.filter(tweet=self.id).count()
+
     @classmethod
     def NumberOfTweets(cls,user):
-        return cls.objects.filter(tweeter=user).count()
+        return cls.objects.filter(tweeter=user).count() + Comments.objects.filter(commenter=user.username).count()
 
     @classmethod
     def AllTweets(cls,user):
         return cls.objects.filter(tweeter=user).order_by('-time')
 
+
+class Likes(models.Model):
+    tweet=models.ForeignKey(Tweets, on_delete=models.CASCADE)
+    liker = models.CharField(max_length=50)
+
+    @classmethod
+    def NumberOfLikes(cls,tweet):
+        return cls.objects.filter(tweet=tweet).count()
+
+class Comments(models.Model):
+    tweet=models.ForeignKey(Tweets, on_delete=models.CASCADE)
+    commenter = models.CharField(max_length=50)
+    comment = models.CharField(max_length=140)
+    time = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def NumberOfComments(cls,tweet):
+        return cls.objects.filter(tweet=tweet).count()
+
+    @classmethod
+    def AllComments(cls,tweet):
+        return cls.objects.filter(tweet=tweet).order_by('-time')

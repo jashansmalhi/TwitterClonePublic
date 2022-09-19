@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <div style="padding: 15px">
+
+            <div style="background-color:#E1E8ED;font-weight: bold;border-radius: 20px; width: auto; height: auto; padding: 5px 30px 5px 30px;">
+
+                <div  style="display:table ;width: 100%">
+                    <h5 style="display:table-cell;"><a href="/profile/{{ tweet.tweeter }}">@{{ tweet.tweeter }}</a></h5>
+                </div>
+
+                <p>{{ tweet.text }}</p>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <h6 class="text-left small">{{ numlikes }} Likes {{ numcomments }} Comments</h6>
+                    <h6 class="text-right small">{{ tweet.time }}</h6>
+                </div>
+                <div style="padding-bottom: 5px">
+                <a href="/tweet/{{tweet.id}}/like"><button class="btn btn-outline-danger btn-sm" > {% if like%}Unlike{% else %}Like{% endif %}</button></a>
+                <a href="/tweet/{{tweet.id}}"><button class="btn btn-outline-danger btn-sm"  >Comment</button></a>
+                {% if tweet.tweeter  ==  user %}
+                <a href="/tweet/delete/{{tweet.id}}"><button class="btn btn-outline-danger btn-sm" >Delete</button></a>
+                {% endif %}
+                </div>
+
+
+            </div>
+            <div style="padding-bottom: 10px"></div>
+    </div>
+
+    <form method="POST" action="">
+            {% csrf_token %}
+        <div class="col-12" style="padding-bottom: 10px">
+            <div class="input-group">
+                <textarea type="text" minlength="1" maxlength="140" class="form-control form-control-lg" name="comment" rows="2" placeholder="Comment Something."></textarea>
+                <button type="submit" class="btn btn-secondary">Comment</button>
+            </div>
+        </div>
+    </form>
+
+    <div style="padding: 15px">
+        {% for i in comments %}
+            <div style="background-color:#E1E8ED;font-weight: bold;border-radius: 20px; width: auto; height: auto; padding: 5px 30px 5px 30px;">
+
+
+
+                <div>
+                    <h5><a href="/profile/{{ i.commenter }}">@{{ i.commenter }}</a></h5>
+                </div>
+                    <p>{{ i.comment }}</p>
+
+                <h6 class="text-right small">{{ i.time }}</h6>
+            <div>
+                {% if i.commenter  ==  user %}
+                <a href="/tweet/{{tweet.id}}/delete/{{ i.id }}"><button class="btn btn-outline-danger btn-sm" >Delete</button></a>
+                {% endif %}
+                </div>
+            <div style="padding-bottom: 10px"></div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

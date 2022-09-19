@@ -4,9 +4,10 @@ from django.contrib.auth import login,authenticate,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import CreateUserForm, TweetForm
-from .models import Tweets,Account,Followers
+from .models import Tweets,Account,Followers,Comments,Likes
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+
 
 def regPage(request):
     logout(request)
@@ -44,7 +45,6 @@ def logoutPage(request):
 def home(request):
     user = request.user
     user_following=Followers.getFollowing(user)
-    print(user_following)
 
     if request.method=='POST':
         message =  request.POST.get('tweet')
@@ -52,21 +52,22 @@ def home(request):
         tweet.save()
         return redirect('home')
     tweets = Tweets.objects.order_by('-time')
-    return render(request,'home.html',{'tweets':tweets,'user_following':user_following})
+    return render(request,'home.html',{'tweets':tweets,'user_following':user_following,'user':user})
 
 
 @login_required(login_url='login')
 def homePersonal(request):
     user = request.user
     usernames_following=Followers.getFollowing(user)
+    usernames_following.append(user.username)
     users_following = User.objects.filter(username__in=usernames_following)
     tweets=Tweets.objects.filter(tweeter__in=users_following).order_by('-time')
-    print(users_following)
+
     if request.method=='POST':
         message = request.POST.get('tweet')
         tweet=Tweets(text=message,tweeter=user)
         tweet.save()
-        return redirect('home')
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
     return render(request,'home.html',{'tweets':tweets,'user_following':users_following})
 
 
@@ -93,7 +94,8 @@ def nonUserProfile(request,username):
                                           'numtweets':Tweets.NumberOfTweets(user),
                                           'followers':Followers.NumberOfFollowers(user),
                                           'following':Followers.NumberOfFollowed(user),
-                                          'accInfo':accinfo,'isfollowing':isfollowing})
+                                          'accInfo':accinfo,'isfollowing':isfollowing,
+                                            'currentUser':currentUser})
     return redirect('profile')
 
 @login_required(login_url='login')
@@ -166,19 +168,13 @@ def unfollow(request,username):
         data.delete()
     return redirect(nonUserProfile,username=username)
 
-@login_required(login_url='login')
-def deleteTweetHome(request,id):
-    tweet = Tweets.objects.filter(id=id).first()
-    if tweet.tweeter == request.user:
-        tweet.delete()
-    return redirect('home')
 
 @login_required(login_url='login')
 def deleteTweetUser(request,id):
     tweet = Tweets.objects.filter(id=id).first()
     if tweet.tweeter == request.user:
         tweet.delete()
-    return redirect('profile')
+    return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 @login_required(login_url='login')
 def search(request):
@@ -187,4 +183,46 @@ def search(request):
         results = User.objects.filter(username__icontains=keyword)
         return render(request,'search.html',{'results':results})
     return redirect('home')
+
+@login_required(login_url='login')
+def tweet(request,id):
+    try:
+        tweet = Tweets.objects.get(id=id)
+    except:
+        return redirect('home')
+    user = request.user
+    if request.method == 'POST':
+        message = request.POST.get('comment')
+        comment = Comments(comment=message, commenter=user.username,tweet_id=id)
+        comment.save()
+        return redirect('tweet',id=id)
+    comments = Comments.AllComments(id)
+    numlikes = Likes.NumberOfLikes(id)
+    numcomments = Comments.NumberOfComments(id)
+    like = Likes.objects.filter(liker=user.username,tweet_id=id).first()
+
+    return render(request,'tweet.html',{'tweet':tweet,
+                                        'numlikes':numlikes,
+                                        'numcomments':numcomments,
+                                        'comments':comments,
+                                        'user':user.username,
+                                        'like':like})
+def deletecomment(request,tweetid,id):
+    comment = Comments.objects.filter(id=id).first()
+    if comment.commenter == request.user.username:
+        comment.delete()
+    return redirect('tweet', id=tweetid)
+def liketweet(request,tweetid):
+    user = request.user
+    like = Likes.objects.filter(tweet_id=tweetid,liker=user.username).first()
+    if like:
+        like.delete()
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+
+    else:
+        like = Likes(liker=user.username,tweet_id=tweetid)
+        like.save()
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+
+
 

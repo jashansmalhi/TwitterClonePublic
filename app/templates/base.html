@@ -57,22 +57,20 @@
 
 
 
-    <body style="background-color: #1DA1F2">
-
-        <div class="container vh-100" style="background-color: #E1E8ED">
-        <div class="row d-flex justify-content-center">
-            <div class="col-sm-9" style="background-color: #F5F8FA;padding-top: 25px">
-            {% block content %}
-                {% if messages %}
-                    {% for message in messages  %}
-                        {{ message }}
-                    {% endfor %}
-                {%  endif %}
-            {% endblock %}
-
+    <body style="background-color: #1DA1F2;">
+        <div class="container" style="background-color: #E1E8ED;border-radius: 5px;">
+            <div class="row d-flex justify-content-center" style="padding-bottom: 25px ">
+                <div class="col-sm-9" style="background-color: #F5F8FA;padding-top: 25px;border-radius: 10px">
+                {% block content %}
+                    {% if messages %}
+                        {% for message in messages  %}
+                            {{ message }}
+                        {% endfor %}
+                    {%  endif %}
+                {% endblock %}
+                </div>
             </div>
-            </div>
-            </div>
+        </div>
 
     </body>
 </html>

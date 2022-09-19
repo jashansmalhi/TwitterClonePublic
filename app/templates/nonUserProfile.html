@@ -40,7 +40,14 @@
             <div style="background-color:#E1E8ED;font-weight: bold;border-radius: 20px; width: auto; height: auto; padding: 5px 30px 5px 30px;">
             <h5>@{{ i.tweeter }}</h5>
             <p>{{ i.text }}</p>
-            <h6 class="text-right small">{{ i.time }}</h6>
+            <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <h6 class="text-left small">{{ i.numlikes }} Likes {{ i.numcomments }} Comments</h6>
+                    <h6 class="text-right small">{{ i.time }}</h6>
+                </div>
+                <div style="padding-bottom: 5px">
+                    <a href="/tweet/{{i.id}}/like"><button class="btn btn-outline-danger btn-sm"  >{% if currentUser.username in i.likers %} Unlike{% else %} Like{% endif %}</button></a>
+                    <a href="/tweet/{{i.id}}"><button class="btn btn-outline-danger btn-sm"  >Comment</button></a>
+                </div>
             </div>
             <div style="padding-bottom: 10px"></div>
         {% endfor %}
