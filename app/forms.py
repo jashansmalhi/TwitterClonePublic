@@ -20,6 +20,3 @@ class CreateUserForm(UserCreationForm):
             }
             self.fields[str(field)].widgets.attrs.update(new_data)
 
-
-class TweetForm(forms.Form):
-    tweet = forms.CharField(max_length=140)

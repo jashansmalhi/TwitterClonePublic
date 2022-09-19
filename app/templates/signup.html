@@ -5,11 +5,10 @@
 {% load widget_tweaks %}
 
 {% block content %}
-    {% if message %}
+    {% if messages %}
         {% for m in messages  %}
             {{ m }}
         {% endfor %}
-
     {% endif %}
 
     <div class = 'col-12'>

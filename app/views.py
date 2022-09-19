@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth import login,authenticate,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import CreateUserForm, TweetForm
+from .forms import CreateUserForm
 from .models import Tweets,Account,Followers,Comments,Likes
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -14,6 +14,12 @@ def regPage(request):
     form = CreateUserForm()
     if request.method=='POST':
         form=CreateUserForm(request.POST)
+        username = request.POST.get('username')
+
+        check=User.objects.filter(username__iexact=username).first()
+        if check:
+            messages.success(request, 'Username Taken.')
+            return redirect('reg')
         if form.is_valid():
             form.save()
             messages.success(request,'User Created.')
@@ -59,8 +65,8 @@ def home(request):
 def homePersonal(request):
     user = request.user
     usernames_following=Followers.getFollowing(user)
-    usernames_following.append(user.username)
-    users_following = User.objects.filter(username__in=usernames_following)
+    usernames_following.append(user)
+    users_following = User.objects.filter(username__in=usernames_following) #check
     tweets=Tweets.objects.filter(tweeter__in=users_following).order_by('-time')
 
     if request.method=='POST':
@@ -68,13 +74,13 @@ def homePersonal(request):
         tweet=Tweets(text=message,tweeter=user)
         tweet.save()
         return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
-    return render(request,'home.html',{'tweets':tweets,'user_following':users_following})
+    return render(request,'home.html',{'tweets':tweets,'user_following':users_following,'user':user})
 
 
 @login_required(login_url='login')
 def nonUserProfile(request,username):
     currentUser=request.user
-    user=User.objects.filter(username=username).first()
+    user=User.objects.filter(username__iexact=username).first()
 
 
     followers=Followers.getFollowers(user)
@@ -124,7 +130,7 @@ def editProfile(request):
         username = request.POST.get('username')
         bio = request.POST.get('bio')
         if user.username!=username:
-            if User.objects.filter(username=username).first():
+            if User.objects.filter(username__iexact=username).first():
                 messages.info(request,'Username already taken.')
                 return redirect('edit')
         if accinfo:
@@ -144,26 +150,29 @@ def editProfile(request):
 
 @login_required(login_url='login')
 def followers(request,username):
-    accounts = Followers.getFollowers(username)
+    user = User.objects.filter(username__iexact=username).first()
+    accounts = Followers.getFollowers(user)
     return render(request,'followers.html',{'accounts':accounts})
 
 @login_required(login_url='login')
 def following(request,username):
-    user=User.objects.filter(username=username).first()
+    user=User.objects.filter(username__iexact=username).first()
     accounts = Followers.getFollowing(user)
     return render(request, 'followers.html', {'accounts': accounts})
 
 @login_required(login_url='login')
 def follow(request,username):
-    if Followers.objects.filter(follower=request.user,followed=username):
+    otheruser = User.objects.filter(username__iexact=username).first()
+    if Followers.objects.filter(follower=request.user,followed=otheruser).first():
         return redirect(nonUserProfile,username=username)
-    followed = Followers(follower=request.user,followed=username)
+    followed = Followers(follower=request.user,followed=otheruser)
     followed.save()
     return redirect(nonUserProfile,username=username)
 
 @login_required(login_url='login')
 def unfollow(request,username):
-    data = Followers.objects.get(follower=request.user, followed=username)
+    otheruser = User.objects.filter(username__iexact=username).first()
+    data = Followers.objects.filter(follower=request.user, followed=otheruser).first()
     if data:
         data.delete()
     return redirect(nonUserProfile,username=username)
@@ -193,13 +202,13 @@ def tweet(request,id):
     user = request.user
     if request.method == 'POST':
         message = request.POST.get('comment')
-        comment = Comments(comment=message, commenter=user.username,tweet_id=id)
+        comment = Comments(comment=message, commenter=user,tweet_id=id)
         comment.save()
         return redirect('tweet',id=id)
     comments = Comments.AllComments(id)
     numlikes = Likes.NumberOfLikes(id)
     numcomments = Comments.NumberOfComments(id)
-    like = Likes.objects.filter(liker=user.username,tweet_id=id).first()
+    like = Likes.objects.filter(liker=user,tweet_id=id).first()
 
     return render(request,'tweet.html',{'tweet':tweet,
                                         'numlikes':numlikes,
@@ -210,19 +219,19 @@ def tweet(request,id):
 @login_required(login_url='login')
 def deletecomment(request,tweetid,id):
     comment = Comments.objects.filter(id=id).first()
-    if comment.commenter == request.user.username:
+    if comment.commenter == request.user:
         comment.delete()
     return redirect('tweet', id=tweetid)
 @login_required(login_url='login')
 def liketweet(request,tweetid):
     user = request.user
-    like = Likes.objects.filter(tweet_id=tweetid,liker=user.username).first()
+    like = Likes.objects.filter(tweet_id=tweetid,liker=user).first()
     if like:
         like.delete()
         return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
     else:
-        like = Likes(liker=user.username,tweet_id=tweetid)
+        like = Likes(liker=user,tweet_id=tweetid)
         like.save()
         return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 

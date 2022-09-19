@@ -40,7 +40,7 @@
                     <h6 class="text-right small">{{ i.time }}</h6>
                 </div>
                 <div style="padding-bottom: 5px">
-                    <a href="/tweet/{{i.id}}/like"><button class="btn btn-outline-danger btn-sm"  >{% if user.username in i.likers %} Unlike{% else %} Like{% endif %}</button></a>
+                    <a href="/tweet/{{i.id}}/like"><button class="btn btn-outline-danger btn-sm"  >{% if user.id in i.likers %} Unlike{% else %} Like{% endif %}</button></a>
                     <a href="/tweet/{{i.id}}"><button class="btn btn-outline-danger btn-sm"  >Comment</button></a>
                     {% if i.tweeter  ==  user %}
                     <a href="/tweet/delete/{{i.id}}"><button class="btn btn-outline-danger btn-sm" >Delete</button></a>
