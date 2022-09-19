@@ -51,7 +51,7 @@
 
                 <h6 class="text-right small">{{ i.time }}</h6>
             <div>
-                {% if i.commenter  ==  user %}
+                {% if i.commenter  ==  user.username %}
                 <a href="/tweet/{{tweet.id}}/delete/{{ i.id }}"><button class="btn btn-outline-danger btn-sm" >Delete</button></a>
                 {% endif %}
                 </div>

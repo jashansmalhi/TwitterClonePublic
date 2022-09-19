@@ -54,7 +54,7 @@ class Tweets(models.Model):
 
     @classmethod
     def NumberOfTweets(cls,user):
-        return cls.objects.filter(tweeter=user).count() + Comments.objects.filter(commenter=user.username).count()
+        return cls.objects.filter(tweeter=user).count()
 
     @classmethod
     def AllTweets(cls,user):

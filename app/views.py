@@ -205,13 +205,15 @@ def tweet(request,id):
                                         'numlikes':numlikes,
                                         'numcomments':numcomments,
                                         'comments':comments,
-                                        'user':user.username,
+                                        'user':user,
                                         'like':like})
+@login_required(login_url='login')
 def deletecomment(request,tweetid,id):
     comment = Comments.objects.filter(id=id).first()
     if comment.commenter == request.user.username:
         comment.delete()
     return redirect('tweet', id=tweetid)
+@login_required(login_url='login')
 def liketweet(request,tweetid):
     user = request.user
     like = Likes.objects.filter(tweet_id=tweetid,liker=user.username).first()
